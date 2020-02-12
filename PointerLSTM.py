@@ -15,7 +15,7 @@ class PointerLSTM(LSTM):
     def build(self, input_shape):
         super(PointerLSTM, self).build(input_shape)
         self.input_spec = [InputSpec(shape=input_shape)]
-        init = initializations.get('orthogonal')
+        init = initializations.get("orthogonal")
         self.W1 = init((self.hidden_shape, 1))
         self.W2 = init((self.hidden_shape, 1))
         self.vt = init((input_shape[1], 1))
@@ -24,7 +24,7 @@ class PointerLSTM(LSTM):
     def call(self, x, mask=None):
         input_shape = self.input_spec[0].shape
         en_seq = x
-        x_input = x[:, input_shape[1]-1, :]
+        x_input = x[:, input_shape[1] - 1, :]
         x_input = K.repeat(x_input, input_shape[1])
         initial_states = self.get_initial_states(x_input)
 
@@ -32,11 +32,14 @@ class PointerLSTM(LSTM):
         constants.append(en_seq)
         preprocessed_input = self.preprocess_input(x_input)
 
-        last_output, outputs, states = K.rnn(self.step, preprocessed_input,
-                                             initial_states,
-                                             go_backwards=self.go_backwards,
-                                             constants=constants,
-                                             input_length=input_shape[1])
+        last_output, outputs, states = K.rnn(
+            self.step,
+            preprocessed_input,
+            initial_states,
+            go_backwards=self.go_backwards,
+            constants=constants,
+            input_length=input_shape[1],
+        )
 
         return outputs
 
